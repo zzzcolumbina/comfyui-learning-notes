@@ -1,0 +1,50 @@
+name: Publish reading edition to Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'comfyui-learning-notes-2026.10.29.zip'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify and extract approved public package
+        shell: python
+        run: |
+          import hashlib, pathlib, shutil, zipfile
+          archive = pathlib.Path("comfyui-learning-notes-2026.10.29.zip")
+          expected = "7e5ad38db97435b4b7458a16690b7eefb9393acdd36ff3b71dccfd2cb9994dc1"
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == expected
+          dest = pathlib.Path("_unpacked").resolve()
+          with zipfile.ZipFile(archive) as z:
+              for item in z.infolist():
+                  target = (dest / item.filename).resolve()
+                  assert target.is_relative_to(dest), "Unsafe archive path"
+              z.extractall(dest)
+          roots = list(dest.iterdir())
+          assert len(roots) == 1 and (roots[0] / "index.html").is_file()
+          shutil.copytree(roots[0], "_site")
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy reading edition
+        id: deployment
+        uses: actions/deploy-pages@v4
