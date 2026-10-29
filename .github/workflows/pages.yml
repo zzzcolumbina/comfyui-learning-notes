@@ -19,7 +19,7 @@ jobs:
       - name: Verify and extract approved public package
         shell: python
         run: |
-          import hashlib, pathlib, shutil, zipfile
+          import hashlib, json, pathlib, shutil, zipfile
           archive = pathlib.Path("comfyui-learning-notes-2026.10.29.zip")
           expected = "7e5ad38db97435b4b7458a16690b7eefb9393acdd36ff3b71dccfd2cb9994dc1"
           assert hashlib.sha256(archive.read_bytes()).hexdigest() == expected
@@ -32,6 +32,22 @@ jobs:
           roots = list(dest.iterdir())
           assert len(roots) == 1 and (roots[0] / "index.html").is_file()
           shutil.copytree(roots[0], "_site")
+          site = pathlib.Path("_site")
+          download = "https://github.com/zzzcolumbina/comfyui-learning-notes/raw/refs/heads/main/comfyui-learning-notes-2026.10.29.zip"
+          old = '<p>先完整解压，再用浏览器打开 <code>开始阅读.html</code>。也可阅读或编辑 Markdown 原稿；保持文件夹结构，图片与工作流才能正常打开。</p>'
+          new = '<p>这是在线阅读版，可直接点击目录阅读，无需下载或安装。需要离线阅读或使用配套工作流时，可<a href="' + download + '">下载完整离线分享包</a>并完整解压。</p>'
+          for page in site.glob("*.html"):
+              text = page.read_text(encoding="utf-8")
+              text = text.replace("· 离线阅读", "· 在线阅读")
+              text = text.replace(old, new)
+              page.write_text(text, encoding="utf-8")
+          manifest = site / "文件校验清单.json"
+          data = {"version": "2026.10.29-online", "files": {}}
+          for path in sorted(site.rglob("*")):
+              if path.is_file() and path != manifest:
+                  content = path.read_bytes()
+                  data["files"][path.relative_to(site).as_posix()] = {"bytes": len(content), "sha256": hashlib.sha256(content).hexdigest()}
+          manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
       - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
