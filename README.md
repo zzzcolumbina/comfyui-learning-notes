@@ -2,7 +2,9 @@
 
 个人学习笔记与实测经验分享，作者 ming。分享版本 **2026.10.29**，核心实测日期 **2026-10-28**。
 
-## 下载与阅读
+## 在线阅读与下载
+
+**[直接在线阅读（无需下载）](https://zzzcolumbina.github.io/comfyui-learning-notes/)**
 
 [下载完整离线分享包（约 15.2 MB）](comfyui-learning-notes-2026.10.29.zip?raw=true) · [SHA-256 校验值](SHA256SUMS.txt)
 
@@ -19,7 +21,7 @@
 
 实测环境为 Windows 11、RTX 4060 Ti 8 GB、ComfyUI 0.41.3；使用 RealVisXL 4.0 与官方 Offset LoRA。参数仅代表已记录的尝试，不承诺跨模型或跨设备产生相同结果。
 
-全新系统安装、SDXL Base 替代路线、ControlNet、IP-Adapter、跨设备一致性及零基础试学未纳入本次验收。进阶章节与实测范围已区分。本版完成文件、格式与本地链接静态检查；新版 HTML 尚未完成浏览器目视复核。
+全新系统安装、SDXL Base 替代路线、ControlNet、IP-Adapter、跨设备一致性及零基础试学未纳入本次验收。进阶章节与实测范围已区分。本版完成文件、格式与本地链接静态检查。2026-10-29 已部署 GitHub Pages，核验在线正文与配套文件，并完成在线首页显示检查。
 
 ## 反馈、署名与许可
 
